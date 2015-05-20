@@ -1,0 +1,237 @@
+@(username: String)
+
+@main("plusX") {
+    <script type="text/javascript" src="@routes.API.jsRoutes()"></script>
+    <style>
+        label {
+            font-size: large;
+        }
+    </style>
+    <script type="text/javascript" src ='@routes.Assets.at("javascripts/prepod.js")'></script>
+    <div class="navbar navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#"><strong>plusX v0.9</strong></a>
+            </div>
+            <div class="navbar-collapse collapse navbar-inverse-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="http://dobrinets.ru/" target="_blank"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> Страница разработчика</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a><strong>@username</strong></a></li>
+                    <li><a href="@routes.Secure.logOutProc()"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Выход</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h2 class="sub-header">Выбор группы</h2>
+        <select style="max-width: 200px;"
+        data-bind="options: groups,
+                       optionsText: 'groupTitle',
+                       value: selectedGroup,
+                       optionsCaption: 'Выберите...',
+                       event:{ change: loader}"
+        class="form-control"
+        id="groupSelector"></select>
+        <a href=# data-bind="click: loadGroups"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Обновить</a>
+        &nbsp;
+        <a data-toggle="collapse" href="#formСreateGroup" aria-expanded="false" aria-controls="formСreateGroup">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Добавить группу
+        </a>
+        <div style="max-width: 400px;" class="collapse" id="formСreateGroup">
+            <div class="form-group">
+                <label>Название</label>
+                <input data-bind="textInput: newGroupTitle" type="text" class="form-control" id="title" placeholder="Название группы">
+            </div>
+            <div class="form-group">
+                <label for="pass">Студенты</label>
+                <label for="pass">(Фамилия Имя; Фамилия Имя; Фамилия Имя; ...)</label>
+                <textarea rows=5 data-bind="textInput: newGroupStudents" class="form-control" id="students" placeholder="Студенты"></textarea>
+            </div>
+            <button class="btn btn-primary" data-bind="click: createGroup">Добавить</button>
+        </div>
+
+        <h2 class="sub-header">
+            Группа <strong><span data-bind="text: selectedGroup() ? selectedGroup().groupTitle : 'не выбрана'"></span> </strong>
+                <span data-bind="visible: selectedGroup()">(<span data-bind="text: students().length"></span> студентов)</span>
+        </h2>
+
+        <div data-bind="visible: selectedGroup()">
+
+        <a data-toggle="collapse" href="#formEditGroup" aria-expanded="false" aria-controls="formEditGroup">
+            <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Параметры
+        </a>
+
+        <div style="max-width: 400px;" class="collapse" id="formEditGroup">
+            <div class="form-group">
+                <label>Переименовать группу</label>
+                <div class="input-group">
+                    <input data-bind="textInput: groupNewTitle, value: selectedGroup() ? selectedGroup().groupTitle : 'не выбрана'" type="text" class="form-control" id="title">
+                    <span class="input-group-btn">
+                        <button data-bind="click: renameGroup" class="btn btn-primary"> <span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Лабораторные работы</label>
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Дедлайн</th>
+                            <th>Сдали</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: labs">
+                        <tr>
+                            <td data-bind="text: labTitle"></td>
+                            <td data-bind="text: labDeathLine"></td>
+                            <td data-bind="text: labStudCount"></td>
+                            <td><a href="#" style="color : darkred ;" data-bind="click: $root.delLab">
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            </a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="input-group">
+                    <input data-bind="textInput: newLabTitle" type="text" style="max-width: 52%;" class="form-control" id="title" placeholder="Новая лабораторная">
+                    <input type="date" class="form-control" style="max-width: 48%;" data-bind="textInput: newLabDeathLine">
+                    <span class="input-group-btn">
+                        <button data-bind="click: addLab" class="btn btn-primary"> <span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Добавить студента</label>
+                <div class="input-group">
+                    <input data-bind="textInput: studLast" type="text" style="max-width: 52%;" class="form-control" id="title" placeholder="Фамилия">
+                    <input data-bind="textInput: studFirst" type="text" style="max-width: 48%;" class="form-control" id="title" placeholder="Имя">
+                    <span class="input-group-btn">
+                        <button data-bind="click: addStudToGroup" class="btn btn-primary"> <span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <button data-bind="click: deleteGroup" class="btn btn-danger"> <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Удалить группу и студентов в ней</button>
+            </div>
+        </div>
+
+
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Фамилия</th>
+                    <th>Имя</th>
+                    <th>+</th>
+                    <th></th>
+                    <th>Лабы</th>
+                    <th>
+                        <select data-bind="options: labs,
+                       optionsText: 'labTitle',
+                       value: selectedLab,
+                       optionsCaption: 'Сдача лабораторной'"></select>
+                    </th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: students">
+                <tr>
+                    <!--<td><a href="#" data-bind="text: achTitle, click: $root.seeAchieve"></a></td>-->
+                    <th><a href="#" data-bind="click: $root.studInfo"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></a></th>
+                    <td data-bind="text: studLastName"></td>
+                    <td data-bind="text: studFirstName"></td>
+                    <td data-bind="text: studPlusCount"></td>
+                    <td>
+                        <a href="#" data-bind="click: $root.addPlus">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                        </a>
+                    </td>
+                    <td data-bind="text: studLabCount"></td>
+                    <td>
+                        <button data-bind="click: $root.doneLab">Сдать</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="studinfo" tabindex="-1" role="dialog" aria-labelledby="studinfoLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 450px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
+                    <h4 class="modal-title" id="studinfoLabel">Подробная информация</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label class="control-label" for="inputDefault">Редактировать личные данные</label>
+                        <input type="text" class="form-control" id="inputDefault" data-bind="textInput: e_studLastName, value: v_studLastName">
+                        <input type="text" class="form-control" id="inputDefault" data-bind="textInput: e_studFirstName, value: v_studFirstName">
+                        <button data-bind="click: editName" class="btn btn-primary" data-dismiss="modal"> <span class="glyphicon glyphicon-send" aria-hidden="true"></span> Изменить</button>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="control-label" for="inputDefault">Лабораторные</label>
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Лаба</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach: labx">
+                                <tr>
+                                    <td data-bind="text: doneLabDate"></td>
+                                    <td data-bind="text: doneLabLab"></td>
+                                    <td><a href="#" style="color : darkred ;" data-bind="click: $root.delDoneLab">
+                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label" for="inputDefault">Плюсики</label>
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach: plusx">
+                                <tr>
+                                    <td data-bind="text: plusDate"></td>
+                                    <td><a href="#" style="color : darkred ;" data-bind="click: $root.delPlus">
+                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                    </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger pull-left" data-dismiss="modal" data-bind="click: delStud">Удалить студента</button>
+                    <button class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

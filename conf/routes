@@ -1,0 +1,43 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET           /                     controllers.Secure.index()
+
+# Secure
+POST          /login                controllers.Secure.logInProc()
+GET           /logout               controllers.Secure.logOutProc()
+
+# Content
+GET           /plusx                controllers.Application.index()
+
+# API
+GET           /api/group            controllers.API.getGroupsJSON()
+PUT           /api/group            controllers.API.createGroupJSON()
+POST          /api/group            controllers.API.renameGroupJSON()
+DELETE        /api/group            controllers.API.deleteGroupJSON()
+
+POST          /api/get_studs        controllers.API.loadStudentsJSON()
+PUT           /api/add_studs        controllers.API.addStudToGroupJSON()
+POST          /api/edit_stud        controllers.API.editStudNameJSON()
+DELETE        /api/edit_stud        controllers.API.deleteStudentJSON()
+
+POST          /api/get_plusx        controllers.API.loadPlusxJSON()
+
+POST          /api/get_labs         controllers.API.getLabsJSON()
+PUT           /api/lab              controllers.API.createLabJSON()
+#POST          /api/lab              controllers.API.renameLabJSON()
+DELETE        /api/lab              controllers.API.deleteLabJSON()
+
+PUT           /api/plus             controllers.API.addPlusJSON()
+DELETE        /api/plus             controllers.API.delPlusJSON()
+PUT           /api/done_lab         controllers.API.doneLabJSON()
+
+DELETE        /api/done_lab         controllers.API.delDoneLabJSON()
+
+# jsRoutes
+GET           /api/jsRoutes         controllers.API.jsRoutes()
+
+# Map static resources from the /public folder to the /assets URL path
+GET           /assets/*file         controllers.Assets.at(path="/public", file)
